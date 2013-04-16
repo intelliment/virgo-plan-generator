@@ -31,6 +31,16 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.IOUtil;
 
 /**
+ * Maven plugin for Virgo Plan files generator. This plugin uses a directory
+ * container with JARs files to generate the Plan.
+ * 
+ * The parameters of this plugin are:
+ * 
+ * libsDirectory - Directory that contains the JARs. The default value is "libs".
+ * name - Name of the Plan file. The default value is the project name.
+ * version - Version of the Plan file. The default value is the project version.
+ * scoped - Indicates if the plan will be scoped (true or false). The default value is false.
+ * atomic - Indicates if the plan will be atomic (true or false). The default value is true.
  * 
  * @author Eduardo Fernández León <efernandez@intellimentsec.com>
  * 
@@ -216,5 +226,80 @@ public class VirgoPlanMojo extends AbstractMojo {
 			return name.endsWith(".jar");
 		}
 		
+	}
+	
+	/**
+	 * @return the libsDirectory
+	 */
+	public File getLibsDirectory() {
+		return libsDirectory;
+	}
+	
+	/**
+	 * @param libsDirectory
+	 *            the libsDirectory to set
+	 */
+	public void setLibsDirectory(File libsDirectory) {
+		this.libsDirectory = libsDirectory;
+	}
+	
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * @param name
+	 *            the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	/**
+	 * @return the version
+	 */
+	public String getVersion() {
+		return version;
+	}
+	
+	/**
+	 * @param version
+	 *            the version to set
+	 */
+	public void setVersion(String version) {
+		this.version = version;
+	}
+	
+	/**
+	 * @return the scoped
+	 */
+	public Boolean getScoped() {
+		return scoped;
+	}
+	
+	/**
+	 * @param scoped
+	 *            the scoped to set
+	 */
+	public void setScoped(Boolean scoped) {
+		this.scoped = scoped;
+	}
+	
+	/**
+	 * @return the atomic
+	 */
+	public Boolean getAtomic() {
+		return atomic;
+	}
+	
+	/**
+	 * @param atomic
+	 *            the atomic to set
+	 */
+	public void setAtomic(Boolean atomic) {
+		this.atomic = atomic;
 	}
 }
