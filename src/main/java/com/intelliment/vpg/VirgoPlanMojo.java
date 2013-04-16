@@ -36,11 +36,14 @@ import org.codehaus.plexus.util.IOUtil;
  * 
  * The parameters of this plugin are:
  * 
- * libsDirectory - Directory that contains the JARs. The default value is "libs".
+ * libsDirectory - Directory that contains the JARs. The default value is
+ * "libs".
  * name - Name of the Plan file. The default value is the project name.
  * version - Version of the Plan file. The default value is the project version.
- * scoped - Indicates if the plan will be scoped (true or false). The default value is false.
- * atomic - Indicates if the plan will be atomic (true or false). The default value is true.
+ * scoped - Indicates if the plan will be scoped (true or false). The default
+ * value is false.
+ * atomic - Indicates if the plan will be atomic (true or false). The default
+ * value is true.
  * 
  * @author Eduardo Fernández León <efernandez@intellimentsec.com>
  * 
@@ -161,8 +164,8 @@ public class VirgoPlanMojo extends AbstractMojo {
 		plan.append("\txmlns=\"http://www.eclipse.org/virgo/schema/plan\"\n");
 		plan.append("\t\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
 		plan.append("\t\txsi:schemaLocation=\"\n");
-		plan.append("\t\t\thttp://www.eclipse.org/virgo/schema/plan\"\n");
-		plan.append("\t\t\thttp://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd\">\"\n\n");
+		plan.append("\t\t\thttp://www.eclipse.org/virgo/schema/plan\n");
+		plan.append("\t\t\thttp://www.eclipse.org/virgo/schema/plan/eclipse-virgo-plan.xsd\">\n\n");
 	}
 	
 	/**
