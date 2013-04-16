@@ -8,7 +8,15 @@
 	<version>0.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
-	<url>http://www.intellimentsec.com</url>
+	<developers>
+		<developer>
+			<id>efernandez</id>
+			<name>Eduardo Fernández León</name>
+			<email>efernandez@intellimentsec.com</email>
+			<organization>Intelliment Security</organization>
+			<organizationUrl>http://www.intellimentsec.com</organizationUrl>
+		</developer>
+	</developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,7 +54,7 @@
 				<artifactId>maven-plugin-plugin</artifactId>
 				<version>3.2</version>
 				<configuration>
-					<goalPrefix>virgo-plan-generator</goalPrefix>
+					<goalPrefix>vpg</goalPrefix>
 					<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
 				</configuration>
 				<executions>
