@@ -176,7 +176,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 * @param manifest
 	 * @return
 	 */
-	private String getSymbolicName(Manifest manifest) {
+	protected String getSymbolicName(Manifest manifest) {
 		String name = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
 		return name != null ? name.split(";")[0] : null;
 	}
@@ -187,7 +187,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 * @param manifest
 	 * @return
 	 */
-	private String getVersion(Manifest manifest) {
+	protected String getVersion(Manifest manifest) {
 		return manifest.getMainAttributes().getValue("Bundle-Version");
 	}
 	
@@ -198,7 +198,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
-	private Manifest getManifest(File file) throws MojoExecutionException {
+	protected Manifest getManifest(File file) throws MojoExecutionException {
 		JarFile jar = null;
 		try {
 			jar = new JarFile(file);
@@ -214,21 +214,6 @@ public class VirgoPlanMojo extends AbstractMojo {
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Inner class to filter files accepting only JAR files.
-	 * 
-	 * @author Eduardo Fernández León <efernandez@intellimentsec.com>
-	 * 
-	 */
-	class JarFilenameFilter implements FilenameFilter {
-		
-		@Override
-		public boolean accept(File dir, String name) {
-			return name.endsWith(".jar");
-		}
-		
 	}
 	
 	/**
@@ -304,5 +289,20 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 */
 	public void setAtomic(Boolean atomic) {
 		this.atomic = atomic;
+	}
+	
+	/**
+	 * Inner class to filter files accepting only JAR files.
+	 * 
+	 * @author Eduardo Fernández León <efernandez@intellimentsec.com>
+	 * 
+	 */
+	class JarFilenameFilter implements FilenameFilter {
+		
+		@Override
+		public boolean accept(File dir, String name) {
+			return name.endsWith(".jar");
+		}
+		
 	}
 }
