@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -29,6 +32,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Maven plugin for Virgo Plan files generator. This plugin uses a directory
@@ -82,6 +86,12 @@ public class VirgoPlanMojo extends AbstractMojo {
 	private Boolean atomic;
 	
 	/**
+	 * Indicates the bundles order in the plan file
+	 */
+	@Parameter(property = "order", required = false)
+	private String order;
+	
+	/**
 	 * Generates the plan file according the input parameters
 	 */
 	@Override
@@ -95,19 +105,13 @@ public class VirgoPlanMojo extends AbstractMojo {
 		try {
 			fw = createFileWriter();
 			writeHeader(fw);
-			for (File file : libsDirectory.listFiles(new JarFilenameFilter())) {
-				Manifest manifest = getManifest(file);
-				if (manifest != null) {
-					String bundleName = getSymbolicName(manifest);
-					String bundleVersion = getVersion(manifest);
-					if (bundleName == null || bundleVersion == null) {
-						getLog().warn("Name or version is null in file " + file.getName());
-					} else {
-						writeBundle(fw, bundleName, bundleVersion);
-					}
-				} else {
-					getLog().warn("The file " + file.getName() + " does not contain MANIFEST.MF");
-				}
+			
+			Map<String, String> bundles = extractInfoFromJars();
+			
+			if (StringUtils.isNotBlank(order)) {
+				writeInOrder(fw, bundles);
+			} else {
+				writeWithoutOrder(fw, bundles);
 			}
 			
 			writeFooter(fw);
@@ -117,6 +121,49 @@ public class VirgoPlanMojo extends AbstractMojo {
 			IOUtil.close(fw);
 		}
 		
+	}
+	
+	/**
+	 * @param fw
+	 * @param bundles
+	 * @throws IOException
+	 */
+	private void writeInOrder(FileWriter fw, Map<String, String> bundles) throws IOException {
+		String[] orderList = StringUtils.split(StringUtils.deleteWhitespace(order), ",");
+		for (String b : orderList) {
+			writeBundle(fw, b, bundles.get(b));
+		}
+	}
+	
+	/**
+	 * @param fw
+	 * @param bundles
+	 * @throws IOException
+	 */
+	private void writeWithoutOrder(FileWriter fw, Map<String, String> bundles) throws IOException {
+		for (Entry<String, String> b : bundles.entrySet()) {
+			writeBundle(fw, b.getKey(), b.getValue());
+		}
+	}
+	
+	private Map<String, String> extractInfoFromJars() throws MojoExecutionException, IOException {
+		Map<String, String> bundles = new HashMap<String, String>();
+		for (File file : libsDirectory.listFiles(new JarFilenameFilter())) {
+			Manifest manifest = getManifest(file);
+			if (manifest != null) {
+				String bundleName = getSymbolicName(manifest);
+				String bundleVersion = getVersion(manifest);
+				if (bundleName == null || bundleVersion == null) {
+					getLog().warn("Name or version is null in file " + file.getName());
+				} else {
+					bundles.put(bundleName, bundleVersion);
+				}
+			} else {
+				getLog().warn("The file " + file.getName() + " does not contain MANIFEST.MF");
+			}
+		}
+		
+		return bundles;
 	}
 	
 	/**
@@ -217,25 +264,11 @@ public class VirgoPlanMojo extends AbstractMojo {
 	}
 	
 	/**
-	 * @return the libsDirectory
-	 */
-	public File getLibsDirectory() {
-		return libsDirectory;
-	}
-	
-	/**
 	 * @param libsDirectory
 	 *            the libsDirectory to set
 	 */
 	public void setLibsDirectory(File libsDirectory) {
 		this.libsDirectory = libsDirectory;
-	}
-	
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
 	}
 	
 	/**
@@ -247,25 +280,11 @@ public class VirgoPlanMojo extends AbstractMojo {
 	}
 	
 	/**
-	 * @return the version
-	 */
-	public String getVersion() {
-		return version;
-	}
-	
-	/**
 	 * @param version
 	 *            the version to set
 	 */
 	public void setVersion(String version) {
 		this.version = version;
-	}
-	
-	/**
-	 * @return the scoped
-	 */
-	public Boolean getScoped() {
-		return scoped;
 	}
 	
 	/**
@@ -277,18 +296,19 @@ public class VirgoPlanMojo extends AbstractMojo {
 	}
 	
 	/**
-	 * @return the atomic
-	 */
-	public Boolean getAtomic() {
-		return atomic;
-	}
-	
-	/**
 	 * @param atomic
 	 *            the atomic to set
 	 */
 	public void setAtomic(Boolean atomic) {
 		this.atomic = atomic;
+	}
+	
+	/**
+	 * @param order
+	 *            the order to set
+	 */
+	public void setOrder(String order) {
+		this.order = order;
 	}
 	
 	/**

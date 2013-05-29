@@ -10,6 +10,7 @@ The parameters of this plugin are:
 * version - Version of the Plan file. The default value is the project version.
 * scoped - Indicates if the plan will be scoped (true or false). The default value is false.
 * atomic - Indicates if the plan will be atomic (true or false). The default value is true.
+* order - Comma separated bundle symbolic name in the desired order in the plan. This parameter is optional.
 
 The generated plan will be contain the list of entries for each _OSGi-fied_ JAR with _type=bundle_
 
@@ -55,6 +56,7 @@ Example of configuration:
 								<name>example-plan</name>
 								<version>1.0.0</version>
 								<libsDirectory>${project.basedir}/jars</libsDirectory>
+								<order>bundle1, bundle2, bundle3</order>
 							</configuration>
 						</execution>
 					</executions>

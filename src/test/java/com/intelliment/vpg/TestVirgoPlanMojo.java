@@ -52,7 +52,7 @@ public class TestVirgoPlanMojo {
 	}
 	
 	@Test
-	public void execute() throws MojoExecutionException, IOException {
+	public void executeWithoutOrder() throws MojoExecutionException, IOException {
 		stubbingManifest();
 		
 		mojo.setName("test-plan");
@@ -70,6 +70,30 @@ public class TestVirgoPlanMojo {
 		assertTrue(content.contains("name=\"test-plan\" version=\"1.0.1\" scoped=\"true\" atomic=\"true\""));
 		assertTrue(content.contains("<artifact type=\"bundle\" name=\"test-symbolic-name\" version=\"[1.4.2, 2)\" />"));
 		assertTrue(content.contains("<artifact type=\"bundle\" name=\"another-bundle-name\" version=\"[2.2, 3)\" />"));
+	}
+	
+	@Test
+	public void executeWithOrder() throws MojoExecutionException, IOException {
+		stubbingManifest();
+		
+		mojo.setName("test-plan");
+		mojo.setVersion("1.0.1");
+		mojo.setScoped(true);
+		mojo.setAtomic(true);
+		mojo.setOrder("another-bundle-name, test-symbolic-name");
+		
+		mojo.execute();
+		
+		File planFile = new File(directory, "test-plan-1.0.1.plan");
+		assertTrue(planFile.exists());
+		
+		String content = FileUtils.fileRead(planFile);
+		assertNotNull(content);
+		assertTrue(content.contains("name=\"test-plan\" version=\"1.0.1\" scoped=\"true\" atomic=\"true\""));
+		assertTrue(content.contains("<artifact type=\"bundle\" name=\"test-symbolic-name\" version=\"[1.4.2, 2)\" />"));
+		assertTrue(content.contains("<artifact type=\"bundle\" name=\"another-bundle-name\" version=\"[2.2, 3)\" />"));
+		
+		assertTrue(content.indexOf("another-bundle-name") < content.indexOf("test-symbolic-name"));
 	}
 	
 	/**
