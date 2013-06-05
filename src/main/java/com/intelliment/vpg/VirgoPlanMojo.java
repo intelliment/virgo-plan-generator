@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.JarFile;
@@ -92,6 +94,12 @@ public class VirgoPlanMojo extends AbstractMojo {
 	private String order;
 	
 	/**
+	 * Indicates the bundles exclusion in the plan file
+	 */
+	@Parameter(property = "exclude", required = false)
+	private String exclude;
+	
+	/**
 	 * Generates the plan file according the input parameters
 	 */
 	@Override
@@ -129,10 +137,19 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 * @throws IOException
 	 */
 	private void writeInOrder(FileWriter fw, Map<String, String> bundles) throws IOException {
-		String[] orderList = StringUtils.split(StringUtils.deleteWhitespace(order), ",");
+		List<String> orderList = split(order);
 		for (String b : orderList) {
 			writeBundle(fw, b, bundles.get(b));
 		}
+	}
+	
+	private List<String> split(String element) {
+		if (StringUtils.isNotBlank(element)) {
+			String[] array = StringUtils.split(StringUtils.deleteWhitespace(element), ",");
+			return Arrays.asList(array);
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -148,6 +165,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 	
 	private Map<String, String> extractInfoFromJars() throws MojoExecutionException, IOException {
 		Map<String, String> bundles = new HashMap<String, String>();
+		List<String> exclusions = split(exclude);
 		for (File file : libsDirectory.listFiles(new JarFilenameFilter())) {
 			Manifest manifest = getManifest(file);
 			if (manifest != null) {
@@ -155,7 +173,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 				String bundleVersion = getVersion(manifest);
 				if (bundleName == null || bundleVersion == null) {
 					getLog().warn("Name or version is null in file " + file.getName());
-				} else {
+				} else if (exclusions == null || (exclusions != null && !exclusions.contains(bundleName))) {
 					bundles.put(bundleName, bundleVersion);
 				}
 			} else {
@@ -309,6 +327,14 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 */
 	public void setOrder(String order) {
 		this.order = order;
+	}
+	
+	/**
+	 * @param exclude
+	 *            the exclude to set
+	 */
+	public void setExclude(String exclude) {
+		this.exclude = exclude;
 	}
 	
 	/**
