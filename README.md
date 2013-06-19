@@ -57,8 +57,14 @@ Example of configuration:
 								<name>example-plan</name>
 								<version>1.0.0</version>
 								<libsDirectory>${project.basedir}/jars</libsDirectory>
-								<order>bundle1, bundle2, bundle3</order>
-								<exclude>bundle4</exclude>
+								<order>
+									<param>bundle1</param>
+									<param>bundle2</param>
+									<param>bundle3</param>
+								</order>
+								<exclude>
+									<param>bundle4</param>
+								</exclude>
 							</configuration>
 						</execution>
 					</executions>

@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.jar.Manifest;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -81,7 +83,10 @@ public class TestVirgoPlanMojo {
 		mojo.setVersion("1.0.1");
 		mojo.setScoped(true);
 		mojo.setAtomic(true);
-		mojo.setOrder("another-bundle-name, test-symbolic-name");
+		List<String> order = new LinkedList<String>();
+		order.add("another-bundle-name");
+		order.add("test-symbolic-name");
+		mojo.setOrder(order);
 		
 		mojo.execute();
 		
@@ -105,7 +110,9 @@ public class TestVirgoPlanMojo {
 		mojo.setVersion("1.0.1");
 		mojo.setScoped(true);
 		mojo.setAtomic(true);
-		mojo.setExclude("another-bundle-name");
+		List<String> exclude = new LinkedList<String>();
+		exclude.add("another-bundle-name");
+		mojo.setExclude(exclude);
 		
 		mojo.execute();
 		

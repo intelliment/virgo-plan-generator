@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Maven plugin for Virgo Plan files generator. This plugin uses a directory
@@ -91,13 +89,13 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 * Indicates the bundles order in the plan file
 	 */
 	@Parameter(property = "order", required = false)
-	private String order;
+	private List<String> order;
 	
 	/**
 	 * Indicates the bundles exclusion in the plan file
 	 */
 	@Parameter(property = "exclude", required = false)
-	private String exclude;
+	private List<String> exclude;
 	
 	/**
 	 * Generates the plan file according the input parameters
@@ -116,7 +114,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 			
 			Map<String, String> bundles = extractInfoFromJars();
 			
-			if (StringUtils.isNotBlank(order)) {
+			if (order != null && !order.isEmpty()) {
 				writeInOrder(fw, bundles);
 			} else {
 				writeWithoutOrder(fw, bundles);
@@ -137,19 +135,9 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 * @throws IOException
 	 */
 	private void writeInOrder(FileWriter fw, Map<String, String> bundles) throws IOException {
-		List<String> orderList = split(order);
-		for (String b : orderList) {
+		for (String b : order) {
 			writeBundle(fw, b, bundles.get(b));
 		}
-	}
-	
-	private List<String> split(String element) {
-		if (StringUtils.isNotBlank(element)) {
-			String[] array = StringUtils.split(StringUtils.deleteWhitespace(element), ",");
-			return Arrays.asList(array);
-		}
-		
-		return null;
 	}
 	
 	/**
@@ -165,7 +153,6 @@ public class VirgoPlanMojo extends AbstractMojo {
 	
 	private Map<String, String> extractInfoFromJars() throws MojoExecutionException, IOException {
 		Map<String, String> bundles = new HashMap<String, String>();
-		List<String> exclusions = split(exclude);
 		for (File file : libsDirectory.listFiles(new JarFilenameFilter())) {
 			Manifest manifest = getManifest(file);
 			if (manifest != null) {
@@ -173,7 +160,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 				String bundleVersion = getVersion(manifest);
 				if (bundleName == null || bundleVersion == null) {
 					getLog().warn("Name or version is null in file " + file.getName());
-				} else if (exclusions == null || (exclusions != null && !exclusions.contains(bundleName))) {
+				} else if (exclude == null || (exclude != null && !exclude.contains(bundleName))) {
 					bundles.put(bundleName, bundleVersion);
 				}
 			} else {
@@ -325,7 +312,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 * @param order
 	 *            the order to set
 	 */
-	public void setOrder(String order) {
+	public void setOrder(List<String> order) {
 		this.order = order;
 	}
 	
@@ -333,7 +320,7 @@ public class VirgoPlanMojo extends AbstractMojo {
 	 * @param exclude
 	 *            the exclude to set
 	 */
-	public void setExclude(String exclude) {
+	public void setExclude(List<String> exclude) {
 		this.exclude = exclude;
 	}
 	
